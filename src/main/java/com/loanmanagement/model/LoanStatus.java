@@ -1,6 +1,6 @@
 package com.loanmanagement.model;
 
-public enum CustomerStatus {
+public enum LoanStatus {
     ACTIVE,
-    INACTIVE
+    CLOSED
 }
