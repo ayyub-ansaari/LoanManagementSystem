@@ -1,9 +1,12 @@
 package com.loanmanagement.controller;
 
+import com.loanmanagement.dao.UserDao;
 import com.loanmanagement.dao.impl.UserDaoImpl;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.AuthService;
+import com.loanmanagement.service.UserService;
 import com.loanmanagement.service.impl.AuthServiceImpl;
+import com.loanmanagement.service.impl.UserServiceImpl;
 import com.loanmanagement.util.ConsoleUtil;
 import com.loanmanagement.util.Session;
 
@@ -11,7 +14,9 @@ public class AppController {
 
     public static void main(String[] args) {
 
-        AuthService auth = new AuthServiceImpl(new UserDaoImpl());
+        UserDao userDao = new UserDaoImpl();
+        AuthService auth = new AuthServiceImpl(userDao);
+        UserService userService = new UserServiceImpl(userDao);
 
         System.out.println("=====================================");
         System.out.println("        Loan Management System");
@@ -40,14 +45,14 @@ public class AppController {
             }
 
             switch (Session.getRole()) {
-                case ADMIN -> adminMenu(auth);
+                case ADMIN -> adminMenu(auth, userService);
                 case LOAN_OFFICER -> officerMenu(auth);
                 case CUSTOMER -> customerMenu(auth);
             }
         }
     }
 
-    private static void adminMenu(AuthService auth) {
+    private static void adminMenu(AuthService auth, UserService userService) {
         while (Session.isLoggedIn()) {
             ConsoleUtil.heading("Admin Menu");
             System.out.println("1. Manage users");
@@ -55,6 +60,7 @@ public class AppController {
             System.out.println("0. Logout");
 
             switch (ConsoleUtil.readInt("Choice: ")) {
+                case 1 -> AdminController.manageUsers(userService);
                 case 0 -> auth.logout();
                 default -> System.out.println("Not built yet.");
             }

@@ -1,26 +1,92 @@
 package com.loanmanagement.service.impl;
 
+import com.loanmanagement.dao.UserDao;
+import com.loanmanagement.exception.BusinessException;
+import com.loanmanagement.exception.ValidationException;
+import com.loanmanagement.model.RecordStatus;
+import com.loanmanagement.model.Role;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.UserService;
+import com.loanmanagement.util.PasswordUtil;
+import com.loanmanagement.util.Session;
+
+import java.util.List;
 
 public class UserServiceImpl implements UserService {
-    @Override
-    public void addUser(User user) {
 
+    private final UserDao userDao;
+
+    public UserServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    @Override
+    public void addUser(User user, String rawPassword) {
+        requireAdmin();
+
+        if (user.getUsername() == null || user.getUsername().isBlank()) {
+            throw new ValidationException("Username is required");
+        }
+        if (rawPassword == null || rawPassword.length() < 6) {
+            throw new ValidationException("Password must be at least 6 characters");
+        }
+        if (user.getRole() == null) {
+            throw new ValidationException("Role is required");
+        }
+        if (userDao.existsByUsername(user.getUsername())) {
+            throw new BusinessException("Username '" + user.getUsername() + "' is already taken");
+        }
+
+        user.setPasswordHash(PasswordUtil.hash(rawPassword));
+        user.setStatus(RecordStatus.ACTIVE);
+
+        userDao.insert(user);
     }
 
     @Override
     public User getUserById(int userId) {
-        return null;
+        requireAdmin();
+        return userDao.findById(userId)
+                .orElseThrow(() -> new BusinessException("No user with id " + userId));
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        requireAdmin();
+        return userDao.findAll();
     }
 
     @Override
     public void updateUser(User user) {
+        requireAdmin();
 
+        if (user.getUsername() == null || user.getUsername().isBlank()) {
+            throw new ValidationException("Username is required");
+        }
+
+        boolean ok = userDao.update(user);
+        if (!ok) {
+            throw new BusinessException("No user with id " + user.getUserId());
+        }
     }
 
     @Override
     public void deleteUser(int userId) {
+        requireAdmin();
 
+        if (userId == Session.getCurrentUserId()) {
+            throw new BusinessException("You cannot delete your own account");
+        }
+
+        boolean ok = userDao.delete(userId);
+        if (!ok) {
+            throw new BusinessException("No user with id " + userId);
+        }
+    }
+
+    private void requireAdmin() {
+        if (Session.getRole() != Role.ADMIN) {
+            throw new BusinessException("Only an administrator can manage users");
+        }
     }
 }

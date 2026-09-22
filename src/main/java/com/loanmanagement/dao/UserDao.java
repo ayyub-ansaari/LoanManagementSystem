@@ -19,5 +19,6 @@ public interface UserDao {
         boolean update(User user);
         boolean updateStatus(int userId , RecordStatus status);
         boolean updatePassword(int userId , String passwordHash);
+        boolean delete(int userId);
 
 }

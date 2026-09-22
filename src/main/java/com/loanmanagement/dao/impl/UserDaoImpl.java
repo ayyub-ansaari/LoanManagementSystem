@@ -219,6 +219,22 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Override
+    public boolean delete(int userId) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            return ps.executeUpdate() == 1;
+
+        } catch (SQLException e) {
+            throw new DataAccessException(
+                    "Cannot delete user " + userId + " — they have related records (customer, loan or repayment)", e);
+        }
+    }
+
     // ---------- row -> object ----------
 
     private User mapRow(ResultSet rs) throws SQLException {
