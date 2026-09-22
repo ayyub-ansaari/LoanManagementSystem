@@ -8,7 +8,7 @@ public final class PasswordUtil {
 
     }
     public static String hash(String plainPassword){
-        return BCrypt.hashpw(plainPassword,BCrypt.gensalt(COST));
+            return BCrypt.hashpw(plainPassword,BCrypt.gensalt(COST));
     }
     public static boolean matches( String plainPassword , String storeHash){
         if(plainPassword == null || storeHash == null){
