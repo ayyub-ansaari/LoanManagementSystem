@@ -73,49 +73,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    @Override
-    public List<User> findByRole(Role role) {
-        String sql = "SELECT * FROM users WHERE role = ? ORDER BY user_id";
-        List<User> users = new ArrayList<>();
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, role.name());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    users.add(mapRow(rs));
-                }
-            }
-            return users;
-
-        } catch (SQLException e) {
-            throw new DataAccessException("findByRole failed for " + role, e);
-        }
-    }
-
-    @Override
-    public List<User> searchByUsername(String partial) {
-        String sql = "SELECT * FROM users WHERE username LIKE ? ORDER BY user_id";
-        List<User> users = new ArrayList<>();
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, "%" + partial + "%");
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    users.add(mapRow(rs));
-                }
-            }
-            return users;
-
-        } catch (SQLException e) {
-            throw new DataAccessException("searchByUsername failed for " + partial, e);
-        }
-    }
 
     @Override
     public boolean existsByUsername(String username) {
@@ -184,40 +142,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     // ---------- DELETE (soft) ----------
-
-    @Override
-    public boolean updateStatus(int userId, RecordStatus status) {
-        String sql = "UPDATE users SET status = ? WHERE user_id = ?";
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, status.name());
-            ps.setInt(2, userId);
-
-            return ps.executeUpdate() == 1;
-
-        } catch (SQLException e) {
-            throw new DataAccessException("updateStatus failed for " + userId, e);
-        }
-    }
-
-    @Override
-    public boolean updatePassword(int userId, String passwordHash) {
-        String sql = "UPDATE users SET password_hash = ? WHERE user_id = ?";
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, passwordHash);
-            ps.setInt(2, userId);
-
-            return ps.executeUpdate() == 1;
-
-        } catch (SQLException e) {
-            throw new DataAccessException("updatePassword failed for " + userId, e);
-        }
-    }
 
     @Override
     public boolean delete(int userId) {

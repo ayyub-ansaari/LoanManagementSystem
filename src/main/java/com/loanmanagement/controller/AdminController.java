@@ -4,34 +4,36 @@ import com.loanmanagement.model.Role;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.UserService;
 import com.loanmanagement.util.ConsoleUtil;
+import org.w3c.dom.ls.LSOutput;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class AdminController {
 
     public static void manageUsers(UserService userService) {
 
         while (true) {
-            ConsoleUtil.heading("Manage Users");
+            System.out.println("Manage Users");
             System.out.println("1. View all users");
             System.out.println("2. Search by username");
-            System.out.println("3. Filter by role");
-            System.out.println("4. Add user");
-            System.out.println("5. Edit user");
-            System.out.println("6. Delete user");
+            System.out.println("3. Add user");
+            System.out.println("4. Edit user");
+            System.out.println("5. Delete user");
             System.out.println("0. Back");
 
-            int choice = ConsoleUtil.readInt("Choice: ");
+            System.out.println("Choice: ");
+            Scanner sc = new Scanner(System.in);
+            int choice = sc.nextInt();
 
             try {
                 switch (choice) {
                     case 1 -> print(userService.getAllUsers());
                     case 2 -> searchUsers(userService);
-                    case 3 -> filterByRole(userService);
-                    case 4 -> addUser(userService);
-                    case 5 -> editUser(userService);
-                    case 6 -> deleteUser(userService);
+                    case 3 -> addUser(userService);
+                    case 4 -> editUser(userService);
+                    case 5 -> deleteUser(userService);
                     case 0 -> { return; }
                     default -> System.out.println("Invalid choice.");
                 }
@@ -54,23 +56,13 @@ public class AdminController {
     }
 
     private static void searchUsers(UserService userService) {
-        String text = ConsoleUtil.readLine("Search text: ").toLowerCase();
+        Scanner searchuser = new Scanner(System.in);
+        System.out.println("Enter the user that you want to find: ");
+        String text = searchuser.nextLine().toLowerCase();
 
         List<User> found = new ArrayList<>();
         for (User u : userService.getAllUsers()) {
             if (u.getUsername().toLowerCase().contains(text)) {
-                found.add(u);
-            }
-        }
-        print(found);
-    }
-
-    private static void filterByRole(UserService userService) {
-        Role role = askRole();
-
-        List<User> found = new ArrayList<>();
-        for (User u : userService.getAllUsers()) {
-            if (u.getRole() == role) {
                 found.add(u);
             }
         }
