@@ -1,11 +1,15 @@
 package com.loanmanagement.controller;
 
+import com.loanmanagement.dao.LoanTypeDao;
 import com.loanmanagement.dao.UserDao;
+import com.loanmanagement.dao.impl.LoanTypeDaoImpl;
 import com.loanmanagement.dao.impl.UserDaoImpl;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.AuthService;
+import com.loanmanagement.service.LoanTypeService;
 import com.loanmanagement.service.UserService;
 import com.loanmanagement.service.impl.AuthServiceImpl;
+import com.loanmanagement.service.impl.LoanTypeServiceImpl;
 import com.loanmanagement.service.impl.UserServiceImpl;
 import com.loanmanagement.util.ConsoleUtil;
 import com.loanmanagement.util.Session;
@@ -15,8 +19,10 @@ public class AppController {
     public static void main(String[] args) {
 
         UserDao userDao = new UserDaoImpl();
+        LoanTypeDao loanTypeDao = new LoanTypeDaoImpl();
         AuthService auth = new AuthServiceImpl(userDao);
         UserService userService = new UserServiceImpl(userDao);
+        LoanTypeService loanTypeService = new LoanTypeServiceImpl(loanTypeDao);
 
         System.out.println("=====================================");
         System.out.println("        Loan Management System");
@@ -45,14 +51,14 @@ public class AppController {
             }
 
             switch (Session.getRole()) {
-                case ADMIN -> adminMenu(auth, userService);
+                case ADMIN -> adminMenu(auth, userService,loanTypeService);
                 case LOAN_OFFICER -> officerMenu(auth);
                 case CUSTOMER -> customerMenu(auth);
             }
         }
     }
 
-    private static void adminMenu(AuthService auth, UserService userService) {
+    private static void adminMenu(AuthService auth, UserService userService,LoanTypeService loanTypeService) {
         while (Session.isLoggedIn()) {
             ConsoleUtil.heading("Admin Menu");
             System.out.println("1. Manage users");
@@ -61,6 +67,7 @@ public class AppController {
 
             switch (ConsoleUtil.readInt("Choice: ")) {
                 case 1 -> AdminController.manageUsers(userService);
+                case 2 -> LoanTypeController.manageLoantypes(loanTypeService);
                 case 0 -> auth.logout();
                 default -> System.out.println("Not built yet.");
             }
