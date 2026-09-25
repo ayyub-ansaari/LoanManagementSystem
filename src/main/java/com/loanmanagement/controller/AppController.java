@@ -17,6 +17,10 @@ import com.loanmanagement.service.impl.LoanTypeServiceImpl;
 import com.loanmanagement.service.impl.UserServiceImpl;
 import com.loanmanagement.util.ConsoleUtil;
 import com.loanmanagement.util.Session;
+import com.loanmanagement.dao.LoanApplicationDao;
+import com.loanmanagement.dao.impl.LoanApplicationDaoImpl;
+import com.loanmanagement.service.ApplicationService;
+import com.loanmanagement.service.impl.ApplicationServiceImpl;
 
 public class AppController {
 
@@ -25,6 +29,8 @@ public class AppController {
         UserDao userDao = new UserDaoImpl();
         LoanTypeDao loanTypeDao = new LoanTypeDaoImpl();
         CustomerDao customerDao = new CustomerDaoImpl();
+        LoanApplicationDao applicationDao = new LoanApplicationDaoImpl();
+        ApplicationService applicationService = new ApplicationServiceImpl(applicationDao);
 
         AuthService auth = new AuthServiceImpl(userDao);
         UserService userService = new UserServiceImpl(userDao);
@@ -58,47 +64,51 @@ public class AppController {
             }
 
             switch (Session.getRole()) {
-                case ADMIN -> adminMenu(auth, userService, loanTypeService, customerService);
-                case LOAN_OFFICER -> officerMenu(auth, customerService);
+                case ADMIN -> adminMenu(auth, userService, loanTypeService, customerService, applicationService);
+                case LOAN_OFFICER -> officerMenu(auth, customerService, applicationService);
                 case CUSTOMER -> customerMenu(auth);
             }
         }
     }
 
     private static void adminMenu(AuthService auth, UserService userService,
-                                  LoanTypeService loanTypeService, CustomerService customerService) {
+                                  LoanTypeService loanTypeService, CustomerService customerService,
+                                  ApplicationService applicationService) {
         while (Session.isLoggedIn()) {
             ConsoleUtil.heading("Admin Menu");
             System.out.println("1. Manage users");
             System.out.println("2. Manage loan types");
             System.out.println("3. Manage customers");
+            System.out.println("4. Manage applications");
             System.out.println("0. Logout");
 
             switch (ConsoleUtil.readInt("Choice: ")) {
                 case 1 -> AdminController.manageUsers(userService);
                 case 2 -> LoanTypeController.manageLoantypes(loanTypeService);
                 case 3 -> CustomerController.manageCustomers(customerService);
+                case 4 -> ApplicationController.manageApplications(applicationService);
                 case 0 -> auth.logout();
                 default -> System.out.println("Not built yet.");
             }
         }
     }
 
-    private static void officerMenu(AuthService auth, CustomerService customerService) {
+    private static void officerMenu(AuthService auth, CustomerService customerService,
+                                    ApplicationService applicationService) {
         while (Session.isLoggedIn()) {
             ConsoleUtil.heading("Loan Officer Menu");
             System.out.println("1. Manage customers");
-            System.out.println("2. Applications");
+            System.out.println("2. Manage applications");
             System.out.println("0. Logout");
 
             switch (ConsoleUtil.readInt("Choice: ")) {
                 case 1 -> CustomerController.manageCustomers(customerService);
+                case 2 -> ApplicationController.manageApplications(applicationService);
                 case 0 -> auth.logout();
                 default -> System.out.println("Not built yet.");
             }
         }
     }
-
     private static void customerMenu(AuthService auth) {
         while (Session.isLoggedIn()) {
             ConsoleUtil.heading("Customer Menu");

@@ -2,12 +2,12 @@ package com.loanmanagement.dao;
 
 import com.loanmanagement.model.LoanApplication;
 
+import java.util.List;
+
 public interface LoanApplicationDao {
-    void addLoanApplication(LoanApplication application);
-
-    LoanApplication getLoanApplicationById(int applicationId);
-
-    void updateLoanApplication(LoanApplication application);
-
-    void deleteLoanApplication(int applicationId);
+    void addApplication(LoanApplication application);
+    LoanApplication getApplicationById(int applicationId);
+    List<LoanApplication> getAllApplications();
+    void updateApplication(LoanApplication application);
+    void deleteApplication(int applicationId);
 }
