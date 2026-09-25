@@ -9,6 +9,8 @@ import com.loanmanagement.service.LoanTypeService;
 import com.loanmanagement.model.Role;
 import com.loanmanagement.util.Session;
 
+import java.util.List;
+
 public class LoanTypeServiceImpl implements LoanTypeService {
 
     private final LoanTypeDao loanTypeDao;
@@ -26,7 +28,6 @@ public class LoanTypeServiceImpl implements LoanTypeService {
     }
 
 
-
     @Override
     public LoanType getLoanTypeById(int loanTypeId) {
         requiredAdmin();
@@ -38,10 +39,16 @@ public class LoanTypeServiceImpl implements LoanTypeService {
     }
 
     @Override
+    public List<LoanType> getAllLoanTypes() {
+        requiredAdmin();
+        return loanTypeDao.getAllLoanTypes();
+    }
+
+
+    @Override
     public void updateLoanType(LoanType loanType) {
         requiredAdmin();
         validate(loanType);
-
         getLoanTypeById(loanType.getLoanTypeId());
         loanTypeDao.updateLoanType(loanType);
     }
@@ -51,7 +58,6 @@ public class LoanTypeServiceImpl implements LoanTypeService {
         requiredAdmin();
         getLoanTypeById(loanTypeId);
         loanTypeDao.deleteLoanType(loanTypeId);
-
     }
     private void validate(LoanType loantype){
         if(loantype.getName() == null || loantype.getName().isBlank()){

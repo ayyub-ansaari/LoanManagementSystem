@@ -75,6 +75,6 @@ public class LoanType {
     }
     @Override
     public String toString(){
-        return loanTypeId + " ,name " + name +" ,interestRate "+interestRate+" ,minAmount " + minAmount + " ,maxAmount " + maxAmount + " ,maxtenure "+ " months" + status;
+        return loanTypeId + " ,name " + name +" ,interestRate "+interestRate+" ,minAmount " + minAmount + " ,maxAmount " + maxAmount + " ,maxtenure "+maxTenureMonths + " months , status: " + status;
     }
 }

@@ -5,9 +5,6 @@ import com.loanmanagement.exception.DataAccessException;
 import com.loanmanagement.model.LoanType;
 import com.loanmanagement.util.DBConnection;
 
-
-import javax.swing.text.html.HTMLDocument;
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +13,20 @@ public class LoanTypeDaoImpl implements LoanTypeDao {
     @Override
     public void addLoanType(LoanType loanType) {
 
-        String sql = "insert into loan_type" + "(name ,description , interest_rate , min_amount , max_amount , max_tenture_months, status)"+"values (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO loan_types " +
+                "(name, description, interest_rate, min_amount, max_amount, max_tenure_months, status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
-            ps.setString(1,loanType.getName());
-            ps.setString(2,loanType.getDescription());
-            ps.setDouble(3,loanType.getInterestRate());
-            ps.setDouble(4,loanType.getMinAmount());
-            ps.setDouble(5,loanType.getMaxAmount());
+            ps.setString(1, loanType.getName());
+            ps.setString(2, loanType.getDescription());
+            ps.setDouble(3, loanType.getInterestRate());
+            ps.setDouble(4, loanType.getMinAmount());
+            ps.setDouble(5, loanType.getMaxAmount());
             ps.setInt(6, loanType.getMaxTenureMonths());
-            ps.setString(7 , loanType.getStatus().name());
+            ps.setString(7, loanType.getStatus().name());
+
+            ps.executeUpdate();
 
             try(ResultSet keys = ps.getGeneratedKeys()){
                 if(keys.next()){
@@ -57,7 +58,9 @@ public class LoanTypeDaoImpl implements LoanTypeDao {
 
     @Override
     public void updateLoanType(LoanType loanType) {
-        String sql = "update loan_types set name = ? , description = ? , interest_rate = ?"+"min_amount = ? , max_amount = ? , max_tenure_months = ? , status = ?"+"where loan_type_id = ?";
+        String sql = "UPDATE loan_types SET name = ?, description = ?, interest_rate = ?, "
+                + "min_amount = ?, max_amount = ?, max_tenure_months = ?, status = ? "
+                + "WHERE loan_type_id = ?";
         try(Connection con = DBConnection.getConnection();
         PreparedStatement ps = con.prepareStatement(sql)){
 
@@ -95,8 +98,7 @@ public class LoanTypeDaoImpl implements LoanTypeDao {
 
     @Override
     public void deleteLoanType(int loanTypeId) {
-        String sql = "Delete from loan_types where loan_types_id = ?";
-        try(Connection con = DBConnection.getConnection();
+        String sql = "DELETE FROM loan_types WHERE loan_type_id = ?";        try(Connection con = DBConnection.getConnection();
         PreparedStatement ps = con.prepareStatement(sql)){
             ps.setInt(1,loanTypeId);
             ps.executeUpdate();
