@@ -23,9 +23,8 @@ public class AdminController {
             System.out.println("5. Delete user");
             System.out.println("0. Back");
 
-            System.out.println("Choice: ");
-            Scanner sc = new Scanner(System.in);
-            int choice = sc.nextInt();
+            int choice = ConsoleUtil.readInt("Choice: ");
+
 
             try {
                 switch (choice) {
@@ -56,9 +55,7 @@ public class AdminController {
     }
 
     private static void searchUsers(UserService userService) {
-        Scanner searchuser = new Scanner(System.in);
-        System.out.println("Enter the user that you want to find: ");
-        String text = searchuser.nextLine().toLowerCase();
+        String text = ConsoleUtil.readLine("Enter the user that you want to find: ").toLowerCase();
 
         List<User> found = new ArrayList<>();
         for (User u : userService.getAllUsers()) {

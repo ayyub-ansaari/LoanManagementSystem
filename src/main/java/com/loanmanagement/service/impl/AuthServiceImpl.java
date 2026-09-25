@@ -7,7 +7,6 @@ import com.loanmanagement.exception.ValidationException;
 import com.loanmanagement.model.RecordStatus;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.AuthService;
-import com.loanmanagement.util.PasswordUtil;
 import com.loanmanagement.util.Session;
 
 public class AuthServiceImpl implements AuthService {
@@ -29,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userDao.findByUsername(username.trim())
                 .orElseThrow(() -> new BusinessException("Invalid username or password"));
 
-        if (!PasswordUtil.matches(rawPassword, user.getPasswordHash())) {
+        if (!user.getPasswordHash().equals(rawPassword)) {
             throw new BusinessException("Invalid username or password");
         }
 

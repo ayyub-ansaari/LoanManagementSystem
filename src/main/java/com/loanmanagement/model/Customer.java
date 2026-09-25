@@ -1,27 +1,22 @@
 package com.loanmanagement.model;
 
+import java.time.LocalDate;
+
 public class Customer {
     private int customerId;
     private int userId;
     private String fullName;
     private String email;
     private String phone;
-    private String dob;
+    private LocalDate dob;
     private String address;
     private double monthlyIncome;
     private String panNumber;
     private String aadhaarLast4;
-    private String employmentType;
+    private EmploymentType employmentType;
     private String accountNumber;
     private String ifscCode;
-    private String bankName;
-    private String kycStatus;
-    private String kycRemarks;
-    private int kycVerifiedBy;
-    private String kycVerifiedAt;
-    private int creditScore;
-    private double existingEmi;
-    private String status;
+    private RecordStatus status;
 
     public int getCustomerId() {
         return customerId;
@@ -63,11 +58,11 @@ public class Customer {
         this.phone = phone;
     }
 
-    public String getDob() {
+    public LocalDate getDob() {
         return dob;
     }
 
-    public void setDob(String dob) {
+    public void setDob(LocalDate dob) {
         this.dob = dob;
     }
 
@@ -103,12 +98,12 @@ public class Customer {
         this.aadhaarLast4 = aadhaarLast4;
     }
 
-    public String getEmploymentType() {
+    public EmploymentType getEmploymentType() {
         return employmentType;
     }
 
     public void setEmploymentType(String employmentType) {
-        this.employmentType = employmentType;
+        this.employmentType = (employmentType == null) ? null : EmploymentType.valueOf(employmentType);
     }
 
     public String getAccountNumber() {
@@ -127,67 +122,28 @@ public class Customer {
         this.ifscCode = ifscCode;
     }
 
-    public String getBankName() {
-        return bankName;
-    }
-
-    public void setBankName(String bankName) {
-        this.bankName = bankName;
-    }
-
-    public String getKycStatus() {
-        return kycStatus;
-    }
-
-    public void setKycStatus(String kycStatus) {
-        this.kycStatus = kycStatus;
-    }
-
-    public String getKycRemarks() {
-        return kycRemarks;
-    }
-
-    public void setKycRemarks(String kycRemarks) {
-        this.kycRemarks = kycRemarks;
-    }
-
-    public int getKycVerifiedBy() {
-        return kycVerifiedBy;
-    }
-
-    public void setKycVerifiedBy(int kycVerifiedBy) {
-        this.kycVerifiedBy = kycVerifiedBy;
-    }
-
-    public String getKycVerifiedAt() {
-        return kycVerifiedAt;
-    }
-
-    public void setKycVerifiedAt(String kycVerifiedAt) {
-        this.kycVerifiedAt = kycVerifiedAt;
-    }
-
-    public int getCreditScore() {
-        return creditScore;
-    }
-
-    public void setCreditScore(int creditScore) {
-        this.creditScore = creditScore;
-    }
-
-    public double getExistingEmi() {
-        return existingEmi;
-    }
-
-    public void setExistingEmi(double existingEmi) {
-        this.existingEmi = existingEmi;
-    }
-
-    public String getStatus() {
+    public RecordStatus getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = RecordStatus.valueOf(status);
+    }
+    @Override
+    public String toString() {
+        return customerId
+                + " | userId " + userId
+                + " | " + fullName
+                + " | " + email
+                + " | " + phone
+                + " | dob " + dob
+                + " | income " + monthlyIncome
+                + " | pan " + panNumber
+                + " | aadhaar " + aadhaarLast4
+                + " | employment " + employmentType
+                + " | account " + accountNumber
+                + " | ifsc " + ifscCode
+                + " | address " + address
+                + " | " + status;
     }
 }

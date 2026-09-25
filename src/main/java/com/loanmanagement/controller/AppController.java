@@ -1,14 +1,18 @@
 package com.loanmanagement.controller;
 
+import com.loanmanagement.dao.CustomerDao;
 import com.loanmanagement.dao.LoanTypeDao;
 import com.loanmanagement.dao.UserDao;
+import com.loanmanagement.dao.impl.CustomerDaoImpl;
 import com.loanmanagement.dao.impl.LoanTypeDaoImpl;
 import com.loanmanagement.dao.impl.UserDaoImpl;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.AuthService;
+import com.loanmanagement.service.CustomerService;
 import com.loanmanagement.service.LoanTypeService;
 import com.loanmanagement.service.UserService;
 import com.loanmanagement.service.impl.AuthServiceImpl;
+import com.loanmanagement.service.impl.CustomerServiceImpl;
 import com.loanmanagement.service.impl.LoanTypeServiceImpl;
 import com.loanmanagement.service.impl.UserServiceImpl;
 import com.loanmanagement.util.ConsoleUtil;
@@ -20,9 +24,12 @@ public class AppController {
 
         UserDao userDao = new UserDaoImpl();
         LoanTypeDao loanTypeDao = new LoanTypeDaoImpl();
+        CustomerDao customerDao = new CustomerDaoImpl();
+
         AuthService auth = new AuthServiceImpl(userDao);
         UserService userService = new UserServiceImpl(userDao);
         LoanTypeService loanTypeService = new LoanTypeServiceImpl(loanTypeDao);
+        CustomerService customerService = new CustomerServiceImpl(customerDao);
 
         System.out.println("=====================================");
         System.out.println("        Loan Management System");
@@ -51,37 +58,41 @@ public class AppController {
             }
 
             switch (Session.getRole()) {
-                case ADMIN -> adminMenu(auth, userService,loanTypeService);
-                case LOAN_OFFICER -> officerMenu(auth);
+                case ADMIN -> adminMenu(auth, userService, loanTypeService, customerService);
+                case LOAN_OFFICER -> officerMenu(auth, customerService);
                 case CUSTOMER -> customerMenu(auth);
             }
         }
     }
 
-    private static void adminMenu(AuthService auth, UserService userService,LoanTypeService loanTypeService) {
+    private static void adminMenu(AuthService auth, UserService userService,
+                                  LoanTypeService loanTypeService, CustomerService customerService) {
         while (Session.isLoggedIn()) {
             ConsoleUtil.heading("Admin Menu");
             System.out.println("1. Manage users");
             System.out.println("2. Manage loan types");
+            System.out.println("3. Manage customers");
             System.out.println("0. Logout");
 
             switch (ConsoleUtil.readInt("Choice: ")) {
                 case 1 -> AdminController.manageUsers(userService);
                 case 2 -> LoanTypeController.manageLoantypes(loanTypeService);
+                case 3 -> CustomerController.manageCustomers(customerService);
                 case 0 -> auth.logout();
                 default -> System.out.println("Not built yet.");
             }
         }
     }
 
-    private static void officerMenu(AuthService auth) {
+    private static void officerMenu(AuthService auth, CustomerService customerService) {
         while (Session.isLoggedIn()) {
             ConsoleUtil.heading("Loan Officer Menu");
-            System.out.println("1. Customers");
+            System.out.println("1. Manage customers");
             System.out.println("2. Applications");
             System.out.println("0. Logout");
 
             switch (ConsoleUtil.readInt("Choice: ")) {
+                case 1 -> CustomerController.manageCustomers(customerService);
                 case 0 -> auth.logout();
                 default -> System.out.println("Not built yet.");
             }

@@ -7,7 +7,6 @@ import com.loanmanagement.model.RecordStatus;
 import com.loanmanagement.model.Role;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.UserService;
-import com.loanmanagement.util.PasswordUtil;
 import com.loanmanagement.util.Session;
 
 import java.util.List;
@@ -37,7 +36,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("Username '" + user.getUsername() + "' is already taken");
         }
 
-        user.setPasswordHash(PasswordUtil.hash(rawPassword));
+        user.setPasswordHash(rawPassword);
         user.setStatus(RecordStatus.ACTIVE);
 
         userDao.insert(user);

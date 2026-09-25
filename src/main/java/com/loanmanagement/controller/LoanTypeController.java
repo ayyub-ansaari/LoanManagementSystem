@@ -5,7 +5,7 @@ import com.loanmanagement.service.LoanTypeService;
 import com.loanmanagement.util.ConsoleUtil;
 
 import java.util.List;
-import java.util.Scanner;
+
 
 
 
@@ -21,9 +21,7 @@ public class LoanTypeController {
             System.out.println("0.Back");
 
 
-            Scanner sc = new Scanner(System.in);
-            System.out.print("Enter your choice: ");
-            int choice = sc.nextInt();
+            int choice = ConsoleUtil.readInt("Enter your choice: ");
 
             try{
                 switch (choice){
@@ -66,9 +64,7 @@ public class LoanTypeController {
 
     }
     private static void edit (LoanTypeService service){
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter the loan id to edit:");
-        int id = sc.nextInt();
+        int id = ConsoleUtil.readInt("Enter the loan id to edit: ");
         LoanType loanType = service.getLoanTypeById(id);
 
         loanType.setName(ConsoleUtil.readLine("Name: "));
@@ -83,9 +79,7 @@ public class LoanTypeController {
         System.out.println("updated: "+loanType);
     }
     private static void delete(LoanTypeService service){
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter the loan id to delete: ");
-        int id = sc.nextInt();
+        int id = ConsoleUtil.readInt("Enter the loan id to delete: ");
         String confirm = ConsoleUtil.readLine("Type YES to confirm: ");
         if(!confirm.equals("YES")){
             System.out.println("cancelled.");

@@ -23,6 +23,15 @@ public final class ConsoleUtil {
             }
         }
     }
+    public static double readDouble(String prompt) {
+        while (true) {
+            try {
+                return Double.parseDouble(readLine(prompt));
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number, for example 50000 or 12.50");
+            }
+        }
+    }
 
     public static void heading(String title) {
         System.out.println();

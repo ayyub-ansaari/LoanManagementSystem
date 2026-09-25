@@ -6,7 +6,6 @@ import com.loanmanagement.model.User;
 public class Session {
     public static User currentUser;
     private Session(){
-
     }
     public static void login(User user){
         currentUser = user;
