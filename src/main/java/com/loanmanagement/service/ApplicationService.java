@@ -10,4 +10,5 @@ public interface ApplicationService {
     List<LoanApplication> getAllApplications();
     void updateApplication(LoanApplication application);
     void deleteApplication(int applicationId);
+    List<LoanApplication> getMyApplications();
 }

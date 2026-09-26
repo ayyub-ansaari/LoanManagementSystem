@@ -19,6 +19,9 @@ public class LoanApplicationDaoImpl implements LoanApplicationDao {
     private static final String get_application_by_id =
             "SELECT * FROM loan_applications WHERE application_id = ?";
 
+    private static final String get_applications_by_customer =
+            "SELECT * FROM loan_applications WHERE customer_id = ? ORDER BY application_id";
+
     private static final String get_all_applications =
             "SELECT * FROM loan_applications ORDER BY application_id";
 
@@ -84,6 +87,26 @@ public class LoanApplicationDaoImpl implements LoanApplicationDao {
 
         } catch (SQLException e) {
             throw new DataAccessException("getAllApplications failed ", e);
+        }
+    }
+
+    @Override
+    public List<LoanApplication> getApplicationsByCustomerId(int customerId) {
+        List<LoanApplication> applications = new ArrayList<>();
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(get_applications_by_customer)) {
+
+            ps.setInt(1, customerId);
+            try (ResultSet result = ps.executeQuery()) {
+                while (result.next()) {
+                    applications.add(mapRow(result));
+                }
+            }
+            return applications;
+
+        } catch (SQLException e) {
+            throw new DataAccessException(
+                    "getApplicationsByCustomerId failed for : " + customerId, e);
         }
     }
 

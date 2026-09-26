@@ -2,11 +2,11 @@ package com.loanmanagement.service.impl;
 
 import com.loanmanagement.dao.LoanTypeDao;
 import com.loanmanagement.exception.BusinessException;
+import com.loanmanagement.exception.NotFoundException;
 import com.loanmanagement.exception.ValidationException;
-import com.loanmanagement.model.Loan;
 import com.loanmanagement.model.LoanType;
-import com.loanmanagement.service.LoanTypeService;
 import com.loanmanagement.model.Role;
+import com.loanmanagement.service.LoanTypeService;
 import com.loanmanagement.util.Session;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class LoanTypeServiceImpl implements LoanTypeService {
 
     private final LoanTypeDao loanTypeDao;
 
-    public LoanTypeServiceImpl(LoanTypeDao loanTypeDao){
+    public LoanTypeServiceImpl(LoanTypeDao loanTypeDao) {
         this.loanTypeDao = loanTypeDao;
     }
 
@@ -24,26 +24,23 @@ public class LoanTypeServiceImpl implements LoanTypeService {
         requiredAdmin();
         validate(loanType);
         loanTypeDao.addLoanType(loanType);
-
     }
-
 
     @Override
     public LoanType getLoanTypeById(int loanTypeId) {
         requiredAdmin();
         LoanType loanType = loanTypeDao.getLoanTypeById(loanTypeId);
-        if(loanType == null ){
-            throw new BusinessException("No loan type with id "+loanTypeId);
+        if (loanType == null) {
+            throw new NotFoundException("No loan type with id " + loanTypeId);
         }
         return loanType;
     }
 
     @Override
     public List<LoanType> getAllLoanTypes() {
-        requiredAdmin();
+        requireLogin();
         return loanTypeDao.getAllLoanTypes();
     }
-
 
     @Override
     public void updateLoanType(LoanType loanType) {
@@ -59,25 +56,37 @@ public class LoanTypeServiceImpl implements LoanTypeService {
         getLoanTypeById(loanTypeId);
         loanTypeDao.deleteLoanType(loanTypeId);
     }
-    private void validate(LoanType loantype){
-        if(loantype.getName() == null || loantype.getName().isBlank()){
+
+    private void validate(LoanType loantype) {
+        if (loantype.getName() == null || loantype.getName().isBlank()) {
             throw new ValidationException("Name is required");
         }
-        if(loantype.getInterestRate() <= 0){
-            throw new ValidationException("Interest rate shouldn't be zero or nagative");
+        if (loantype.getInterestRate() <= 0) {
+            throw new ValidationException("Interest rate shouldn't be zero or negative");
         }
-        if(loantype.getMinAmount() <=0){
+        if (loantype.getMinAmount() <= 0) {
             throw new ValidationException("minAmount must be greater than zero");
         }
-        if(loantype.getMaxAmount() < loantype.getMinAmount()){
+        if (loantype.getMaxAmount() < loantype.getMinAmount()) {
             throw new ValidationException("Max amount should be greater than Min amount");
         }
-        if(loantype.getMaxTenureMonths() <= 0) {
+        if (loantype.getMaxTenureMonths() <= 0) {
             throw new ValidationException("Tenure must be atleast 1 month");
         }
+        if (loantype.getStatus() == null) {
+            throw new ValidationException("Status is required");
+        }
     }
+
+    private void requireLogin() {
+        if (!Session.isLoggedIn()) {
+            throw new BusinessException("You must be logged in to do this");
+        }
+    }
+
     private void requiredAdmin() {
-        if(Session.getRole() != Role.ADMIN){
+        requireLogin();
+        if (Session.getRole() != Role.ADMIN) {
             throw new BusinessException("Only an administrator can manage loan types");
         }
     }

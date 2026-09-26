@@ -3,6 +3,7 @@ package com.loanmanagement.dao.impl;
 import com.loanmanagement.dao.CustomerDao;
 import com.loanmanagement.exception.DataAccessException;
 import com.loanmanagement.model.Customer;
+import com.loanmanagement.model.LoanApplication;
 import com.loanmanagement.util.DBConnection;
 
 import java.sql.*;
@@ -19,6 +20,8 @@ public class CustomerDaoImpl implements CustomerDao {
 
     private static final String get_customer_by_id =
             "SELECT * FROM customers WHERE customer_id = ?";
+    private static final String get_customer_by_user_id =
+            "SELECT * FROM customers WHERE user_id = ?";
 
     private static final String get_all_customer =
             "SELECT * FROM customers ORDER BY customer_id";
@@ -79,6 +82,20 @@ public class CustomerDaoImpl implements CustomerDao {
 
         } catch (SQLException e) {
             throw new DataAccessException("getCustomerById failed for : " + customerId, e);
+        }
+    }
+    @Override
+    public Customer getCustomerByUserId(int userId) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(get_customer_by_user_id)) {
+
+            ps.setInt(1, userId);
+            try (ResultSet result = ps.executeQuery()) {
+                return result.next() ? mapRow(result) : null;
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("getCustomerByUserId failed for : " + userId, e);
         }
     }
 

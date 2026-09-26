@@ -42,19 +42,35 @@ public class CustomerServiceImpl implements CustomerService {
     public void updateCustomer(Customer customer) {
         requireStaff();
         validate(customer);
+
         if (customerDao.getCustomerById(customer.getCustomerId()) == null) {
             throw new NotFoundException("No customer found with id " + customer.getCustomerId());
         }
+
         customerDao.updateCustomer(customer);
     }
 
     @Override
     public void deleteCustomer(int customerId) {
         requireStaff();
+
         if (customerDao.getCustomerById(customerId) == null) {
             throw new NotFoundException("No customer found with id " + customerId);
         }
+
         customerDao.deleteCustomer(customerId);
+    }
+
+    @Override
+    public Customer getMyProfile() {
+        requireCustomer();
+
+        Customer customer = customerDao.getCustomerByUserId(Session.getCurrentUserId());
+
+        if (customer == null) {
+            throw new NotFoundException("No customer profile is linked to your login");
+        }
+        return customer;
     }
 
     private void requireStaff() {
@@ -64,6 +80,15 @@ public class CustomerServiceImpl implements CustomerService {
         Role role = Session.getRole();
         if (role != Role.ADMIN && role != Role.LOAN_OFFICER) {
             throw new BusinessException("Only an admin or a loan officer can manage customers");
+        }
+    }
+
+    private void requireCustomer() {
+        if (!Session.isLoggedIn()) {
+            throw new BusinessException("You must be logged in to do this");
+        }
+        if (Session.getRole() != Role.CUSTOMER) {
+            throw new BusinessException("Only a customer can view their own profile");
         }
     }
 

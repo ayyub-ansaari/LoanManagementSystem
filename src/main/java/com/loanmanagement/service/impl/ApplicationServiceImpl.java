@@ -1,9 +1,11 @@
 package com.loanmanagement.service.impl;
 
+import com.loanmanagement.dao.CustomerDao;
 import com.loanmanagement.dao.LoanApplicationDao;
 import com.loanmanagement.exception.BusinessException;
 import com.loanmanagement.exception.NotFoundException;
 import com.loanmanagement.exception.ValidationException;
+import com.loanmanagement.model.Customer;
 import com.loanmanagement.model.LoanApplication;
 import com.loanmanagement.model.LoanApplicationStatus;
 import com.loanmanagement.model.Role;
@@ -16,14 +18,23 @@ import java.util.List;
 public class ApplicationServiceImpl implements ApplicationService {
 
     private final LoanApplicationDao applicationDao;
+    private final CustomerDao customerDao;
 
-    public ApplicationServiceImpl(LoanApplicationDao applicationDao) {
+    public ApplicationServiceImpl(LoanApplicationDao applicationDao, CustomerDao customerDao) {
         this.applicationDao = applicationDao;
+        this.customerDao = customerDao;
     }
 
     @Override
     public void addApplication(LoanApplication application) {
-        requireStaff();
+        if (!Session.isLoggedIn()) {
+            throw new BusinessException("You must be logged in to do this");
+        }
+
+        if (Session.getRole() == Role.CUSTOMER) {
+            application.setCustomerId(currentCustomerId());
+        }
+
         validate(application);
         applicationDao.addApplication(application);
     }
@@ -81,6 +92,12 @@ public class ApplicationServiceImpl implements ApplicationService {
         applicationDao.deleteApplication(applicationId);
     }
 
+    @Override
+    public List<LoanApplication> getMyApplications() {
+        requireCustomer();
+        return applicationDao.getApplicationsByCustomerId(currentCustomerId());
+    }
+
     private void requireStaff() {
         if (!Session.isLoggedIn()) {
             throw new BusinessException("You must be logged in to do this");
@@ -89,6 +106,23 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (role != Role.ADMIN && role != Role.LOAN_OFFICER) {
             throw new BusinessException("Only an admin or a loan officer can manage applications");
         }
+    }
+
+    private void requireCustomer() {
+        if (!Session.isLoggedIn()) {
+            throw new BusinessException("You must be logged in to do this");
+        }
+        if (Session.getRole() != Role.CUSTOMER) {
+            throw new BusinessException("Only a customer can view their own applications");
+        }
+    }
+
+    private int currentCustomerId() {
+        Customer customer = customerDao.getCustomerByUserId(Session.getCurrentUserId());
+        if (customer == null) {
+            throw new NotFoundException("No customer profile is linked to your login");
+        }
+        return customer.getCustomerId();
     }
 
     private void validate(LoanApplication application) {
