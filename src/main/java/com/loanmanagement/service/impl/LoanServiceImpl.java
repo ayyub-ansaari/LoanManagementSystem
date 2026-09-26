@@ -10,17 +10,22 @@ import com.loanmanagement.model.Customer;
 import com.loanmanagement.model.Loan;
 import com.loanmanagement.model.LoanApplication;
 import com.loanmanagement.model.LoanApplicationStatus;
-import com.loanmanagement.model.LoanStatus;
+
 import com.loanmanagement.model.LoanType;
 import com.loanmanagement.model.Role;
 import com.loanmanagement.service.LoanService;
-import com.loanmanagement.util.LoanCalculator;
+
 import com.loanmanagement.util.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class LoanServiceImpl implements LoanService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoanServiceImpl.class);
+
 
     private final LoanDao loanDao;
     private final LoanApplicationDao applicationDao;
@@ -46,6 +51,8 @@ public class LoanServiceImpl implements LoanService {
         }
 
         if (application.getStatus() != LoanApplicationStatus.APPROVED) {
+            logger.warn("Loan creation refused: applicationId={} is {}",
+                    applicationId, application.getStatus());
             throw new BusinessException("Application " + applicationId + " is "
                     + application.getStatus()
                     + " — only an APPROVED application can become a loan");
@@ -58,23 +65,24 @@ public class LoanServiceImpl implements LoanService {
         }
 
         double principal = application.getRequestedAmount();
-        double rate = loanType.getInterestRate();
-        int tenure = application.getTenureMonths();
-        double total = LoanCalculator.totalPayable(principal, rate, tenure);
 
         Loan loan = new Loan();
         loan.setApplicationId(application.getApplicationId());
         loan.setCustomerId(application.getCustomerId());
         loan.setLoanTypeId(application.getLoanTypeId());
         loan.setPrincipalAmount(principal);
-        loan.setInterestRate(rate);
-        loan.setTenureMonths(tenure);
-        loan.setTotalPayable(total);
-        loan.setOutstandingAmount(total);
+        loan.setInterestRate(loanType.getInterestRate());
+        loan.setTenureMonths(loanType.getMaxTenureMonths());
+        loan.setTotalPayable(principal);
+        loan.setOutstandingAmount(principal);
         loan.setStartDate(LocalDate.now());
         loan.setCreatedBy(Session.getCurrentUserId());
 
         loanDao.addLoan(loan);
+        logger.info("Loan created: loanId={}, applicationId={}, customerId={}, "
+                        + "principal={}, rate={}, tenure={} months, by userId={}",
+                loan.getLoanId(), applicationId, loan.getCustomerId(),
+                principal, loanType.getInterestRate(), loanType.getMaxTenureMonths(), Session.getCurrentUserId());
 
         System.out.println("Loan created: " + loan);
     }
@@ -101,6 +109,8 @@ public class LoanServiceImpl implements LoanService {
         }
 
         loanDao.deleteLoan(loanId);
+        logger.info("Loan deleted: loanId={}, by userId={}", loanId, Session.getCurrentUserId());
+
     }
 
     @Override

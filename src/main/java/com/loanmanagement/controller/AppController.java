@@ -10,6 +10,7 @@ import com.loanmanagement.dao.impl.LoanApplicationDaoImpl;
 import com.loanmanagement.dao.impl.LoanDaoImpl;
 import com.loanmanagement.dao.impl.LoanTypeDaoImpl;
 import com.loanmanagement.dao.impl.UserDaoImpl;
+import com.loanmanagement.exception.ValidationException;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.ApplicationService;
 import com.loanmanagement.service.AuthService;
@@ -25,8 +26,12 @@ import com.loanmanagement.service.impl.LoanTypeServiceImpl;
 import com.loanmanagement.service.impl.UserServiceImpl;
 import com.loanmanagement.util.ConsoleUtil;
 import com.loanmanagement.util.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AppController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AppController.class);
 
     public static void main(String[] args) {
 
@@ -43,6 +48,7 @@ public class AppController {
         ApplicationService applicationService = new ApplicationServiceImpl(applicationDao, customerDao);
         LoanService loanService = new LoanServiceImpl(loanDao, applicationDao, loanTypeDao, customerDao);
 
+        logger.info("Application Started");
         System.out.println("=====================================");
         System.out.println("        Loan Management System");
         System.out.println("=====================================");
@@ -64,6 +70,7 @@ public class AppController {
                     User user = auth.login(username, password);
                     System.out.println("\nWelcome, " + user.getUsername() + " (" + user.getRole() + ")");
                 } catch (Exception e) {
+                    logger.error("Unexpected error during login", e);
                     System.out.println("Login failed: " + e.getMessage());
                 }
                 continue;

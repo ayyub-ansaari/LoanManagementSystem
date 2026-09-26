@@ -8,10 +8,14 @@ import com.loanmanagement.service.LoanService;
 import com.loanmanagement.service.LoanTypeService;
 import com.loanmanagement.util.ConsoleUtil;
 import com.loanmanagement.util.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class CustomerPortalController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomerPortalController.class);
 
     public static void menu(AuthService auth, LoanTypeService loanTypeService,
                             ApplicationService applicationService, LoanService loanService,
@@ -36,6 +40,7 @@ public class CustomerPortalController {
                     default -> System.out.println("Invalid choice.");
                 }
             } catch (Exception e) {
+                logger.error("Operation failed in the customer portal", e);
                 System.out.println("Error: " + e.getMessage());
             }
         }

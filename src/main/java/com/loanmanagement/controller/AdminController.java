@@ -4,13 +4,15 @@ import com.loanmanagement.model.Role;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.UserService;
 import com.loanmanagement.util.ConsoleUtil;
-import org.w3c.dom.ls.LSOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class AdminController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     public static void manageUsers(UserService userService) {
 
@@ -37,6 +39,7 @@ public class AdminController {
                     default -> System.out.println("Invalid choice.");
                 }
             } catch (Exception e) {
+                logger.error("Operation failed in the user menu", e);
                 System.out.println("Error: " + e.getMessage());
             }
         }

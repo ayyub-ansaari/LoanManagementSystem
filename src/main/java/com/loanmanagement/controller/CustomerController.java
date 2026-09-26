@@ -7,8 +7,12 @@ import com.loanmanagement.util.ConsoleUtil;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CustomerController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     public static void manageCustomers(CustomerService service) {
         while (true) {
@@ -32,6 +36,7 @@ public class CustomerController {
                     default -> System.out.println("Invalid choice");
                 }
             } catch (Exception e) {
+                logger.error("Operation failed in the customer menu", e);
                 System.out.println("Error: " + e.getMessage());
             }
         }

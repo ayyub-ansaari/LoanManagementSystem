@@ -64,9 +64,7 @@ public class CustomerDaoImpl implements CustomerDao {
             }
 
         } catch (SQLException e) {
-            throw new DataAccessException(
-                    "Could not add customer '" + customer.getFullName()
-                            + "' — the user id, email, phone or PAN may already be in use", e);
+            throw new DataAccessException("addCustomer failed : " + e.getMessage(), e);
         }
     }
 

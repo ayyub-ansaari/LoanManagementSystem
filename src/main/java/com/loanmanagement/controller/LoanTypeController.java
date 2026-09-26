@@ -3,7 +3,8 @@ package com.loanmanagement.controller;
 import com.loanmanagement.model.LoanType;
 import com.loanmanagement.service.LoanTypeService;
 import com.loanmanagement.util.ConsoleUtil;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 
 
@@ -11,6 +12,9 @@ import java.util.List;
 
 
 public class LoanTypeController {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoanTypeController.class);
+
     public static void manageLoantypes(LoanTypeService service){
         while(true){
             System.out.println("manage Loan Type");
@@ -32,6 +36,7 @@ public class LoanTypeController {
                     case 0 -> {return; }
                 }
             }catch (Exception e){
+                logger.error("Operation failed in the loan type menu", e);
                 System.out.println("Error" + e.getMessage());
             }
             }

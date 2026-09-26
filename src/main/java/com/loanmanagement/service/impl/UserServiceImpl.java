@@ -8,10 +8,14 @@ import com.loanmanagement.model.Role;
 import com.loanmanagement.model.User;
 import com.loanmanagement.service.UserService;
 import com.loanmanagement.util.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserDao userDao;
 
@@ -40,6 +44,9 @@ public class UserServiceImpl implements UserService {
         user.setStatus(RecordStatus.ACTIVE);
 
         userDao.insert(user);
+
+        logger.info("User created: userId={}, username={}, role={}, by userId={}",
+                user.getUserId(), user.getUsername(), user.getRole(), Session.getCurrentUserId());
     }
 
     @Override
@@ -67,6 +74,9 @@ public class UserServiceImpl implements UserService {
         if (!ok) {
             throw new BusinessException("No user with id " + user.getUserId());
         }
+
+        logger.info("User updated: userId={}, username={}, by userId={}",
+                user.getUserId(), user.getUsername(), Session.getCurrentUserId());
     }
 
     @Override
@@ -74,6 +84,7 @@ public class UserServiceImpl implements UserService {
         requireAdmin();
 
         if (userId == Session.getCurrentUserId()) {
+            logger.warn("Self-delete refused: userId={}", userId);
             throw new BusinessException("You cannot delete your own account");
         }
 
@@ -81,6 +92,8 @@ public class UserServiceImpl implements UserService {
         if (!ok) {
             throw new BusinessException("No user with id " + userId);
         }
+
+        logger.info("User deleted: userId={}, by userId={}", userId, Session.getCurrentUserId());
     }
 
     private void requireAdmin() {

@@ -3,10 +3,12 @@ package com.loanmanagement.controller;
 import com.loanmanagement.model.Loan;
 import com.loanmanagement.service.LoanService;
 import com.loanmanagement.util.ConsoleUtil;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class LoanController {
+    private static final Logger logger = LoggerFactory.getLogger(LoanController.class);
 
     public static void manageLoans(LoanService service) {
         while (true) {
@@ -14,8 +16,7 @@ public class LoanController {
             System.out.println("manage Loans");
             System.out.println("1.View all loans");
             System.out.println("2.Create loan from an approved application");
-            System.out.println("3.Record payment (update outstanding)");
-            System.out.println("4.Delete loan");
+            System.out.println("3.Delete loan");
             System.out.println("0.Back");
 
             int choice = ConsoleUtil.readInt("Enter your choice: ");
@@ -29,6 +30,8 @@ public class LoanController {
                     default -> System.out.println("Invalid choice");
                 }
             } catch (Exception e) {
+                logger.error("Operation failed in the loan menu", e);
+
                 System.out.println("Error: " + e.getMessage());
             }
         }

@@ -8,10 +8,14 @@ import com.loanmanagement.model.LoanType;
 import com.loanmanagement.model.Role;
 import com.loanmanagement.service.LoanTypeService;
 import com.loanmanagement.util.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class LoanTypeServiceImpl implements LoanTypeService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoanTypeServiceImpl.class);
 
     private final LoanTypeDao loanTypeDao;
 
@@ -24,6 +28,10 @@ public class LoanTypeServiceImpl implements LoanTypeService {
         requiredAdmin();
         validate(loanType);
         loanTypeDao.addLoanType(loanType);
+
+        logger.info("Loan type created: loanTypeId={}, name={}, rate={}, by userId={}",
+                loanType.getLoanTypeId(), loanType.getName(),
+                loanType.getInterestRate(), Session.getCurrentUserId());
     }
 
     @Override
@@ -48,6 +56,10 @@ public class LoanTypeServiceImpl implements LoanTypeService {
         validate(loanType);
         getLoanTypeById(loanType.getLoanTypeId());
         loanTypeDao.updateLoanType(loanType);
+
+        logger.info("Loan type updated: loanTypeId={}, name={}, rate={}, by userId={}",
+                loanType.getLoanTypeId(), loanType.getName(),
+                loanType.getInterestRate(), Session.getCurrentUserId());
     }
 
     @Override
@@ -55,6 +67,9 @@ public class LoanTypeServiceImpl implements LoanTypeService {
         requiredAdmin();
         getLoanTypeById(loanTypeId);
         loanTypeDao.deleteLoanType(loanTypeId);
+
+        logger.info("Loan type deleted: loanTypeId={}, by userId={}",
+                loanTypeId, Session.getCurrentUserId());
     }
 
     private void validate(LoanType loantype) {

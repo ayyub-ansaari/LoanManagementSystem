@@ -11,11 +11,15 @@ import com.loanmanagement.model.LoanApplicationStatus;
 import com.loanmanagement.model.Role;
 import com.loanmanagement.service.ApplicationService;
 import com.loanmanagement.util.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class ApplicationServiceImpl implements ApplicationService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationServiceImpl.class);
 
     private final LoanApplicationDao applicationDao;
     private final CustomerDao customerDao;
@@ -37,6 +41,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         validate(application);
         applicationDao.addApplication(application);
+
+        logger.info("Application filed: applicationId={}, customerId={}, loanTypeId={}, "
+                        + "amount={}, tenure={} months, by userId={} ({})",
+                application.getApplicationId(), application.getCustomerId(),
+                application.getLoanTypeId(), application.getRequestedAmount(),
+                application.getTenureMonths(), Session.getCurrentUserId(), Session.getRole());
     }
 
     @Override
@@ -62,6 +72,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         if (existing.getStatus() != LoanApplicationStatus.PENDING) {
+            logger.warn("Review refused: applicationId={} is already {}",
+                    application.getApplicationId(), existing.getStatus());
             throw new BusinessException("Application " + application.getApplicationId()
                     + " is already " + existing.getStatus() + " and cannot be reviewed again");
         }
@@ -79,6 +91,9 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setReviewedAt(LocalDateTime.now());
 
         applicationDao.updateApplication(application);
+
+        logger.info("Application reviewed: applicationId={}, decision={}, by userId={}",
+                application.getApplicationId(), application.getStatus(), Session.getCurrentUserId());
     }
 
     @Override
@@ -90,6 +105,9 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         applicationDao.deleteApplication(applicationId);
+
+        logger.info("Application deleted: applicationId={}, by userId={}",
+                applicationId, Session.getCurrentUserId());
     }
 
     @Override

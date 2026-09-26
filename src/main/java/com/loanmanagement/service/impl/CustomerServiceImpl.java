@@ -8,10 +8,14 @@ import com.loanmanagement.model.Customer;
 import com.loanmanagement.model.Role;
 import com.loanmanagement.service.CustomerService;
 import com.loanmanagement.util.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class CustomerServiceImpl implements CustomerService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     private final CustomerDao customerDao;
 
@@ -24,6 +28,10 @@ public class CustomerServiceImpl implements CustomerService {
         requireStaff();
         validate(customer);
         customerDao.addCustomer(customer);
+
+        logger.info("Customer created: customerId={}, name={}, linked userId={}, by userId={}",
+                customer.getCustomerId(), customer.getFullName(),
+                customer.getUserId(), Session.getCurrentUserId());
     }
 
     @Override
@@ -48,6 +56,9 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         customerDao.updateCustomer(customer);
+
+        logger.info("Customer updated: customerId={}, name={}, by userId={}",
+                customer.getCustomerId(), customer.getFullName(), Session.getCurrentUserId());
     }
 
     @Override
@@ -59,6 +70,9 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         customerDao.deleteCustomer(customerId);
+
+        logger.info("Customer deleted: customerId={}, by userId={}",
+                customerId, Session.getCurrentUserId());
     }
 
     @Override

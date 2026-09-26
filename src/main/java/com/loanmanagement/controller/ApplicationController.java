@@ -5,8 +5,12 @@ import com.loanmanagement.service.ApplicationService;
 import com.loanmanagement.util.ConsoleUtil;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ApplicationController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     public static void manageApplications(ApplicationService service) {
         while (true) {
@@ -30,6 +34,7 @@ public class ApplicationController {
                     default -> System.out.println("Invalid choice");
                 }
             } catch (Exception e) {
+                logger.error("Operation failed in the application menu", e);
                 System.out.println("Error: " + e.getMessage());
             }
         }
